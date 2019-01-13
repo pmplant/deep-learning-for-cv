@@ -17,11 +17,7 @@ if __name__ == "__main__":
     cutoff = vals[lwr95]
 
     # threshold image
-    thresh = arr
-    for i in range(len(arr)):
-        for j in range(len(arr[i])):
-            if arr[i][j] < cutoff:
-                thresh[i][j] = 0
+    thresh = (arr >= cutoff) * arr
 
     # show image
     plt.imshow(thresh, cmap=cm.Greys_r)
