@@ -4,7 +4,6 @@ from scipy.ndimage.filters import gaussian_filter
 import numpy as np
 import h5py as h5
 from matplotlib import pyplot as plt
-import matplotlib.cm as cm
 
 if __name__ == "__main__":
     # sigma params
