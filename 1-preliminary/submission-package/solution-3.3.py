@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from sys import argv
-from PIL import Image
 from scipy.ndimage.filters import gaussian_filter
 import numpy as np
 import h5py as h5
@@ -14,7 +13,7 @@ if __name__ == "__main__":
 
     # load h5
     f = h5.File('output.h5', 'r')
-    arr = f['arr'][:]
+    arr = np.array(f.get('image'))
 
     # reduce to a single channel
     gs = arr.mean(axis=2)

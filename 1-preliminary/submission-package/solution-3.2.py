@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # save inverted image
     with h5.File('output.h5', 'w') as f:
-        f.create_dataset('arr', data=inv)
+        f.create_dataset('image', data=inv)
         f.close()
 
     # show images
