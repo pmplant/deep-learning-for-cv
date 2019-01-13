@@ -21,3 +21,5 @@ if __name__ == "__main__":
     plt.show()
     plt.imshow(inv)
     plt.show()
+
+    exit(0)

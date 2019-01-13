@@ -26,6 +26,12 @@ if __name__ == "__main__":
     # normalize image
     norm = (dif - np.amin(dif)) / np.amax(dif)
 
+    with h5.File('filtered.h5', 'w') as f:
+        f.create_dataset('image', data=norm)
+        f.close()
+
     # show image
     plt.imshow(norm, cmap=cm.Greys_r)
     plt.show()
+
+    exit(0)
