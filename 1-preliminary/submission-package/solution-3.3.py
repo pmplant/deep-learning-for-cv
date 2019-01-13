@@ -31,7 +31,7 @@ if __name__ == "__main__":
         f.close()
 
     # show image
-    plt.imshow(norm, cmap=cm.Greys_r)
+    plt.imshow(norm, cmap='Greys')
     plt.show()
 
     exit(0)
