@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# Paul Molina-Plant
+# V00712982
+
 from PIL import Image
 import numpy as np
 import h5py as h5

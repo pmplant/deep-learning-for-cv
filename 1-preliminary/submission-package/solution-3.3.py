@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# Paul Molina-Plant
+# V00712982
+
 from sys import argv
 from scipy.ndimage.filters import gaussian_filter
 import numpy as np
