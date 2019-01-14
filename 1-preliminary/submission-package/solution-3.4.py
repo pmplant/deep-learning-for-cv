@@ -20,7 +20,7 @@ if __name__ == "__main__":
     thresh = (arr >= cutoff) * arr
 
     # show image
-    plt.imshow(thresh, cmap=cm.Greys_r)
+    plt.imshow(thresh, cmap='gray')
     plt.show()
 
     exit(0)
