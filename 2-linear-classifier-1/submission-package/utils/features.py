@@ -50,6 +50,14 @@ def extract_h_histogram(data):
     """
 
     # TODO: Implement the method
+    h_hist = np.ndarray(shape=(data.shape[0], 16))
+
+    def hist(img):
+        hue = rgb2hsv(img)[:, :, 0]
+        binseq = np.linspace(min(hue), max(hue), num=16)
+        return np.histogram(hue, bins=binseq, density=False)
+
+    h_hist = np.array([hist(v) for v in data])
 
     # Assertion to help you check if implementation is correct
     assert h_hist.shape == (data.shape[0], 16)
@@ -77,9 +85,7 @@ def extract_hog(data):
     print("Extracting HOG...")
 
     # TODO: Implement the method
-    hog_feat = np.ndarray(shape=(data.shape[0], 324))
-    for i, v in enumerate(data):
-        hog_feat[i] = hog(v)
+    hog_feat = np.array([hog(v, block_norm='L1') for v in data])
 
     # Assertion to help you check if implementation is correct
     assert hog_feat.shape == (data.shape[0], 324)

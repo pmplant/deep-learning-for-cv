@@ -72,9 +72,19 @@ def normalize(data, data_mean=None, data_range=None):
     """
 
     # TODO: implement the function
+    if data_mean is None:
+        data_mean = data.mean(axis=0, keepdims=True)
+        assert data_mean.shape == (1, data.shape[1])
+
+    if data_range is None:
+        data_range = data.std(axis=0, keepdims=True)
+        assert data_range.shape == (1, data.shape[1])
+
+    data_n = (data - data_mean) / data_range
 
     # Assertion to help you
     assert data_n.dtype == np.float
+    assert data_n.shape == data.shape
 
     return data_n, data_mean, data_range
 
