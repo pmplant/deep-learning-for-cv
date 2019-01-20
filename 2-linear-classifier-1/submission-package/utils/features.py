@@ -50,7 +50,7 @@ def extract_h_histogram(data):
     """
 
     # TODO: Implement the method
-    binseq = np.linspace(start=0, stop=1, num=17)
+    binseq = np.linspace(0, 1, num=17)
 
     def hist(img):
         return np.histogram(rgb2hsv(img)[:, :, 0],

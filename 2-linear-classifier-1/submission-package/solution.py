@@ -87,9 +87,9 @@ def predict(W, b, x, config):
     """
 
     # TODO: implement the function
-    pred = x.dot(W) + b
+    pred = np.argmax(np.dot(x, W) + b, 1)
 
-    assert pred.shape == (x.shape[0], W.shape[1])
+    assert pred.shape == (x.shape[0], )
 
     return pred
 
@@ -148,6 +148,7 @@ def main(config):
     pred = predict(W, b, x_te_n, config)
 
     # Check accuracy (i.e. count how many are equal)
+    print(pred.shape, y_te.shape)
     acc = np.mean(pred == y_te)
 
     print("Test Accuracy: {}%".format(acc * 100))
