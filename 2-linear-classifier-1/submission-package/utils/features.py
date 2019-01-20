@@ -77,6 +77,9 @@ def extract_hog(data):
     print("Extracting HOG...")
 
     # TODO: Implement the method
+    hog_feat = np.ndarray(shape=(data.shape[0], 324))
+    for i, v in enumerate(data):
+        hog_feat[i] = hog(v)
 
     # Assertion to help you check if implementation is correct
     assert hog_feat.shape == (data.shape[0], 324)
