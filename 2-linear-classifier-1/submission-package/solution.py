@@ -87,6 +87,9 @@ def predict(W, b, x, config):
     """
 
     # TODO: implement the function
+    pred = x.dot(W) + b
+
+    assert pred.shape == (x.shape[0], W.shape[1])
 
     return pred
 
@@ -131,6 +134,7 @@ def main(config):
     # one
     print("Testing mean and variance")
     _, x_tr_mean, x_tr_range = normalize(x_trva)
+
     if not np.all(np.isclose(x_tr_mean, x_mean)) or \
        not np.all(np.isclose(x_tr_range, x_range)):
         print("Mean, range computation is not propper!")

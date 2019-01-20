@@ -50,12 +50,12 @@ def extract_h_histogram(data):
     """
 
     # TODO: Implement the method
-    h_hist = np.ndarray(shape=(data.shape[0], 16))
+    binseq = np.linspace(start=0, stop=1, num=17)
 
     def hist(img):
-        hue = rgb2hsv(img)[:, :, 0]
-        binseq = np.linspace(min(hue), max(hue), num=16)
-        return np.histogram(hue, bins=binseq, density=False)
+        return np.histogram(rgb2hsv(img)[:, :, 0],
+                            bins=binseq,
+                            density=False)[0]
 
     h_hist = np.array([hist(v) for v in data])
 
