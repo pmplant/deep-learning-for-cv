@@ -148,7 +148,6 @@ def main(config):
     pred = predict(W, b, x_te_n, config)
 
     # Check accuracy (i.e. count how many are equal)
-    print(pred.shape, y_te.shape)
     acc = np.mean(pred == y_te)
 
     print("Test Accuracy: {}%".format(acc * 100))
