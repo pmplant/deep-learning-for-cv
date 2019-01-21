@@ -59,15 +59,14 @@ def model_loss(W, b, x, y):
         represented as \frac{1}{N}\sum_i L_i.
     """
 
-    # Not finished yet, but close
     n = y.shape[0]
-    c = b.shape[0]
-    s = x@W
-    s_yi = s[np.arange(n), y]  # from 'https://stackoverflow.com/a/37292206/9801788'
-    s_yi = np.tile(s_yi[np.newaxis].T, (1, c))  # from 'https://stackoverflow.com/a/1582742/9801788'
+    s = x@W + b
+    s_yi = (s[np.arange(n), y])[np.newaxis].T  # from 'https://stackoverflow.com/a/37292206/9801788'
     L_i = s - s_yi + 1
-    L_i[np.arange(n), y] = 0
+    L_i[np.arange(n), y] = 0  # from 'https://ljvmiranda921.github.io/notebook/2017/02/11/multiclass-svm/'
     L_i = (L_i > 0) * L_i
+    assert np.all(L_i >= 0)
+
     loss = (1 / n) * np.sum(L_i)
 
     return loss
