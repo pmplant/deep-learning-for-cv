@@ -85,7 +85,7 @@ def extract_hog(data):
     print("Extracting HOG...")
 
     # TODO: Implement the method
-    hog_feat = np.array([hog(v, block_norm='L1') for v in data])
+    hog_feat = np.array([hog(v, block_norm='L1') for v in np.mean(data, axis=3)])
 
     # Assertion to help you check if implementation is correct
     assert hog_feat.shape == (data.shape[0], 324)
