@@ -61,6 +61,12 @@ def model_loss(W, b, x, y):
     """
 
     # TODO: implement the function
+    n = y.shape[0]
+    s = x@W + b
+    s_yi = s[np.arange(n), y]
+    c = np.max(s)
+    L_i = np.exp(s_yi - c) / np.sum(np.exp(s - c), axis=1)
+    loss = (-1/n) * np.sum(np.log(L_i))
 
     return loss
 
