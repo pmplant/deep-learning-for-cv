@@ -46,71 +46,57 @@
 \section{Derivation of the gradient for cross entropy}
 The cross entropy function.
 \begin{equation}
-  L_{i} = - log \frac{\sum_{j}t_{ij}e^{s_{ij}}}{\sum_{j}e^{s_{ik}}}
+  L_i = - log \frac{\sum_jt_{ij}e^{s_{ij}}}{\sum_ke^{s_{ik}}}
 \end{equation}
-I assume log base e for (1).
+I assume $log$ base $e$ for (1).
+\begin{equation}
+  t_{ij} = \delta_{ij} =
+  \begin{cases}
+    1 & j = y_i \\
+    0 & j \ne y_i
+  \end{cases}
+\end{equation}
+Softmax $P_{ij}$
 \begin{equation}
   P_{ij} = \frac{e^{s_{ij}}}{\sum_{k}e^{s_{ik}}}
 \end{equation}
+Among the $k$ classes, $j = y_{i}$ for exactly one of them. Therefore, we can
+ignore the other $k-1$ terms in the sum of (1).
 \begin{equation}
-  t_{ij} =
-  \begin{cases}
-    1 & j = y_{i} \\
-    0 & j \ne y_{i}
-  \end{cases}
+  L_i = - ln \frac{e^{s_{ij}}}{\sum_k{e^{s_{ik}}}} = -ln P_{ij}
 \end{equation}
-Simplifying (1) by replacing softmax with (2) and reducing the sum following (3).
+Computing the gradient $\frac{\partial L_i}{\partial W}$ via chain rule.
+\begin{equation}\nonumber
+  \frac{\partial L_i}{\partial W} =
+  \frac{\partial L_i}{\partial P_{ij}} \frac{\partial P_{ij}}{\partial s_{ij}} \frac{\partial s_{ij}}{\partial W}
+\end{equation}
+Linear classifier $f(x_j, W) = s_{ij}$.
 \begin{equation}
-  L_{i} = - ln \frac{\sum_{j}t_{ij}e^{s_{ij}}}{\sum_{j}e^{s_{ij}}} = - ln \sum_{j}t_{ij}P_{ij} = - ln P_{ij}
+  s_{ij} = Wx_j + b
 \end{equation}
-Computing the partial derivative of (2) with respect to $s_{j}$.
+The partial derivative of $s_{ij}$ wrt $W$ is nonzero when $j=y_i$
+and zero everywhere else. This condition is expressed with $\delta_{ij}$ (2).
+\begin{equation}\nonumber
+  \frac{\partial s_{ij}}{\partial W} = \delta_{ij} x_j
+\end{equation}
+The partial derivative of $P_{ij}$ (3) wrt $W$ by applying the chain rule.
+\begin{equation}\nonumber
+\begin{split}
+  \frac{\partial P_{ij}}{\partial W}& = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{\delta_{ij}x_je^{s_{ij}}-e^{s_{ij}}x_je^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2}\\
+  & = \left(\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\left(\frac{\delta_{ij}x_j\sum_ke^{s_{ik}}-x_je^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\\
+  & = P_{ij} (\delta_{ij}x_j - P_{ij}x_j) \\
+  & = P_{ij}x_j(\delta_{ij} - P_{ij})
+\end{split}
+\end{equation}
+Finally the partial derivative of $L_i$ (4) wrt $W$.
 \begin{equation}
-  i = j \longrightarrow \frac{\partial P_{ij}}{\partial s_{j}} =
-  \frac{e^{s_{ij}} \sum_{k}e^{s_{ik}} - e^{s_{ij}}e^{s_{ik}}}{(\sum_{k}e^{s_{ik}})^2} =
-  \frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} \left(\frac{\sum_ke^{s_{ik}}e^{s_{ik}}}{\sum_ke^{s_{ik}}}\right) =
-  P_{ij} (1  - P_{ik})
+\begin{split}
+  \frac{\partial L_i}{\partial W}& = \frac{\partial}{\partial W}\left(-lnP_{ij}\right)\\
+  & = -\frac{1}{P_{ij}} P_{ij}x_j(\delta_{ij} - P_{ij})\\
+  & = (\delta_{ij} - P_{ij}) x_j
+\end{split}
 \end{equation}
-\begin{equation}
-  i \ne j \longrightarrow \frac{\partial P_{ij}}{\partial s_{j}} = \frac{- e^{s_{ij}}e^{s_{ik}}}{(\sum_{k}e^{s_{ik}})^2} = - \frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} \left(\frac{e^{s_{ik}}}{\sum_ke^{s_{ik}}}\right) = - P_{ij}P_{ik}
-\end{equation}
-\begin{equation}
-  \delta_{ij} =
-  \begin{cases}
-    1 & i = j \\
-    0 & i \ne j
-  \end{cases}
-\end{equation}
-The partial derivaties (5) and (6) may be combined using (7).
-\begin{equation}
-  \frac{\partial P_{ij}}{\partial s_{j}} =
-  \begin{cases}
-    P_{ij}(1 - P_{ik}) & i = j \\
-    - P_{ij}P_{ik} & i \ne j
-  \end{cases}
-   = P_{ij} (\delta_{ij}  - P_{ik})
-\end{equation}
-Computing the partial derivative of (4) with respect to $s_j$.
-\begin{equation}
-  \frac{\partial L_i}{\partial s_j} = - \frac{1}{P_{ij}} \frac{\partial P_{ij}}{\partial s_{j}} = \delta_{ij} - P_{ik}
-\end{equation}
-\begin{equation}
-  s_{ij} = Wx_{ij} - b
-\end{equation}
-Computing the partial derivative of (8) with respect to $W$.
-\begin{equation}
-  \frac{\partial s_j}{\partial w} =
-  \begin{cases}
-    x_{ij} & i = j \\
-    0 & i \ne j
-  \end{cases}
-\end{equation}
-\begin{equation}
-  i = j \longrightarrow \frac{\partial L_i}{\partial W} =
-  \frac{\partial L_i}{\partial s_j} \frac{\partial s_j}{\partial W} =
-  - \frac{x_{ij}e^{s_{ij}}\sum_ke^{s_ik} - e^{s_{ij}}x_{ik}e^{s_{ik}}}{(\sum_ke^{s_{ik}})^2} =
-  - = - e^
-\end{equation}
-
+Computing the gradient $\frac{\partial L_i}{\partial b}$ via chain rule.
 \pagebreak
 
 Example Section.
