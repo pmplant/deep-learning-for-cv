@@ -111,14 +111,14 @@ and zero everywhere else. This condition is expressed with $\delta_{ij}$ (2).
 \end{equation}
 The partial derivative of $P_{ij}$ (3) wrt $b_i$ by applying the chain rule.
 \begin{equation}\nonumber
-  \frac{\partial P_{ij}}{\partial b_i} = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{-e^{s_{ij}}e^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2} = -P_{ij}^2
+  \frac{\partial P_{ij}}{\partial b_i} = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{\delta_{ij} e^{s_{ij}} \sum_ke^{s_ik}-e^{s_{ij}}e^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2} = \delta_{ij}P_{ij}-P_{ij}^2
 \end{equation}
 Finally the partial derivative of $L_i$ (4) wrt $b_i$.
 \begin{equation}
 \begin{split}
   \frac{\partial L_i}{\partial b_i}& = \frac{\partial}{\partial b_i}\left(-lnP_{ij}\right)\\
-  & = -\frac{1}{P_{ij}} (-P_{ij}^2) \\
-  & = P_{ij}
+  & = -\frac{1}{P_{ij}} (\delta_{ij}P_{ij}-P_{ij}^2) \\
+  & = P_{ij} - \delta_{ij}
 \end{split}
 \end{equation}
 
