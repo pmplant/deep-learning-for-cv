@@ -44,7 +44,7 @@
 \pagebreak
 
 \section{Derivation of the gradient for cross entropy}
-The cross entropy function.
+\subsection{The cross entropy function}
 \begin{equation}
   L_i = - log \frac{\sum_jt_{ij}e^{s_{ij}}}{\sum_ke^{s_{ik}}}
 \end{equation}
@@ -65,38 +65,64 @@ ignore the other $k-1$ terms in the sum of (1).
 \begin{equation}
   L_i = - ln \frac{e^{s_{ij}}}{\sum_k{e^{s_{ik}}}} = -ln P_{ij}
 \end{equation}
+\subsection{Gradient of $W$}
 Computing the gradient $\frac{\partial L_i}{\partial W}$ via chain rule.
 \begin{equation}\nonumber
   \frac{\partial L_i}{\partial W} =
   \frac{\partial L_i}{\partial P_{ij}} \frac{\partial P_{ij}}{\partial s_{ij}} \frac{\partial s_{ij}}{\partial W}
 \end{equation}
-Linear classifier $f(x_j, W) = s_{ij}$.
+Linear classifier $f(x_i, W) = s_{ij}$.
 \begin{equation}
-  s_{ij} = Wx_j + b
+  s_{ij} = Wx_i + b_i
 \end{equation}
 The partial derivative of $s_{ij}$ wrt $W$ is nonzero when $j=y_i$
 and zero everywhere else. This condition is expressed with $\delta_{ij}$ (2).
 \begin{equation}\nonumber
-  \frac{\partial s_{ij}}{\partial W} = \delta_{ij} x_j
+  \frac{\partial s_{ij}}{\partial W} = \delta_{ij} x_i
 \end{equation}
 The partial derivative of $P_{ij}$ (3) wrt $W$ by applying the chain rule.
 \begin{equation}\nonumber
 \begin{split}
-  \frac{\partial P_{ij}}{\partial W}& = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{\delta_{ij}x_je^{s_{ij}}-e^{s_{ij}}x_je^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2}\\
-  & = \left(\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\left(\frac{\delta_{ij}x_j\sum_ke^{s_{ik}}-x_je^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\\
-  & = P_{ij} (\delta_{ij}x_j - P_{ij}x_j) \\
-  & = P_{ij}x_j(\delta_{ij} - P_{ij})
+  \frac{\partial P_{ij}}{\partial W}& = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{\delta_{ij}x_ie^{s_{ij}}-e^{s_{ij}}x_ie^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2}\\
+  & = \left(\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\left(\frac{\delta_{ij}x_i\sum_ke^{s_{ik}}-x_ie^{s_{ij}}}{\sum_ke^{s_{ik}}}\right)\\
+  & = P_{ij} (\delta_{ij}x_i - P_{ij}x_i) \\
+  & = P_{ij}x_i(\delta_{ij} - P_{ij})
 \end{split}
 \end{equation}
 Finally the partial derivative of $L_i$ (4) wrt $W$.
 \begin{equation}
 \begin{split}
   \frac{\partial L_i}{\partial W}& = \frac{\partial}{\partial W}\left(-lnP_{ij}\right)\\
-  & = -\frac{1}{P_{ij}} P_{ij}x_j(\delta_{ij} - P_{ij})\\
-  & = (\delta_{ij} - P_{ij}) x_j
+  & = -\frac{1}{P_{ij}} P_{ij}x_i(\delta_{ij} - P_{ij})\\
+  & = (\delta_{ij} - P_{ij}) x_i
 \end{split}
 \end{equation}
-Computing the gradient $\frac{\partial L_i}{\partial b}$ via chain rule.
+\pagebreak
+\subsection{Gradient of $b_i$}
+Computing the gradient $\frac{\partial L_i}{\partial b_i}$ via chain rule.
+\begin{equation}\nonumber
+  \frac{\partial L_i}{\partial b_i} =
+  \frac{\partial L_i}{\partial P_{ij}} \frac{\partial P_{ij}}{\partial s_{ij}} \frac{\partial s_{ij}}{\partial b_i}
+\end{equation}
+The partial derivative of $s_{ij}$ (5) wrt $b_i$ is nonzero when $j=y_i$
+and zero everywhere else. This condition is expressed with $\delta_{ij}$ (2).
+\begin{equation}\nonumber
+  \frac{\partial s_{ij}}{\partial W} = \delta_{ij}
+\end{equation}
+The partial derivative of $P_{ij}$ (3) wrt $b_i$ by applying the chain rule.
+\begin{equation}\nonumber
+  \frac{\partial P_{ij}}{\partial b_i} = \frac{\partial}{\partial W}\frac{e^{s_{ij}}}{\sum_ke^{s_{ik}}} = \frac{-e^{s_{ij}}e^{s_{ij}}}{\left(\sum_ke^{s_{ik}}\right)^2} = -P_{ij}^2
+\end{equation}
+Finally the partial derivative of $L_i$ (4) wrt $b_i$.
+\begin{equation}
+\begin{split}
+  \frac{\partial L_i}{\partial b_i}& = \frac{\partial}{\partial b_i}\left(-lnP_{ij}\right)\\
+  & = -\frac{1}{P_{ij}} (-P_{ij}^2) \\
+  & = P_{ij}
+\end{split}
+\end{equation}
+
+
 \pagebreak
 
 Example Section.
