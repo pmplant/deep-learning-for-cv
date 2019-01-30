@@ -38,8 +38,6 @@ from utils.features import extract_h_histogram, extract_hog
 from utils.preprocess import normalize
 from utils.regularizor import l2_grad, l2_loss
 
-from random import shuffle
-
 
 def compute_loss(W, b, x, y, config):
     """Computes the losses for each module."""
@@ -197,18 +195,17 @@ def train(x_tr, y_tr, x_va, y_va, config):
         # that we pre-create the random order and then proceed through the
         # data. Recently, people often simply grab data purely randomly from
         # the entire dataset. However, we'll stick to the more traditional way.
-        xy = list(zip(x_tr_n, y_tr))
-        shuffle(xy)
-        x_ran, y_ran = zip(*xy)
-        batch_size = len(xy)//num_batch
+        x_tr_n, y_tr = shuffletwo(x_tr_n, y_tr)
 
         # For each training batch
         losses = np.zeros(num_batch)
         accs = np.zeros(num_batch)
         for idx_batch in range(num_batch):
             # TODO (5 points): Construct batch
-            x_b = np.asarray(x_ran[idx_batch * batch_size: (idx_batch + 1) * batch_size])
-            y_b = np.asarray(y_ran[idx_batch * batch_size: (idx_batch + 1) * batch_size])
+            i0 = idx_batch * batch_size
+            i1 = (idx_batch + 1) * batch_size
+            x_b = x_tr_n[i0: i1]
+            y_b = y_tr[i0: i1]
             # Get loss with compute_loss
             loss_cur, temp_b, pred_b = compute_loss(W, b, x_b, y_b, config)
             # Get gradient with compute_grad
@@ -255,12 +252,16 @@ def train(x_tr, y_tr, x_va, y_va, config):
     train_res["tr_acc_epoch"] = tr_acc_epoch
     train_res["va_acc_epoch"] = va_acc_epoch
     train_res["loss_epoch"] = loss_epoch
-    train_res["weights"] = W
-    train_res["bias"] = b
+    train_res["W"] = W
+    train_res["b"] = b
     # TODO
 
     return train_res
 
+def shuffletwo(x, y):
+    assert len(x) == len(y)
+    p = np.random.permutation(len(x))
+    return x[p], y[p]
 
 def main(config):
     """The main function."""
@@ -298,14 +299,17 @@ def main(config):
     # TODO (5 points): Randomly shuffle data and labels. IMPORANT: make sure
     # the data and label is shuffled with the same random indices so that they
     # don't get mixed up!
+    x_trva, y_trva = shuffletwo(x_trva, y_trva)
 
     # Cross validation setup. Note here that if we set cross validation to
     # False, which is the default, we'll just return results for the first
     # fold.
     if config.cross_validate:
         va_fold_to_test = np.arange(num_fold)
+        va_fold_size = len(x_trva) // num_fold
     else:
         va_fold_to_test = np.arange(1)
+        va_fold_size = len(x_trva)
 
     # ----------------------------------------
     # Cross validation loop
@@ -327,11 +331,12 @@ def main(config):
         print("Training for fold {}...".format(idx_va_fold))
         # Run training
 
-        # REMOVE AFTER !!
-        x_tr=x_trva
-        y_tr=y_trva
-        x_va=x_te
-        y_va=y_te
+        x_trva, y_trva = shuffletwo(x_trva, y_trva)
+        x_tr = x_trva[va_fold_size:]
+        y_tr = y_trva[va_fold_size:]
+        x_va = x_trva[:va_fold_size]
+        y_va = y_trva[:va_fold_size]
+
         cur_train_res = train(x_tr, y_tr, x_va, y_va, config)
 
         # Save results
@@ -373,8 +378,8 @@ def main(config):
     else:
         assert len(train_res) == 1
         # TODO (5 points): Get its W, b, x_tr_mean, x_tr_mean
-        W = cur_train_res["weights"]
-        b = cur_train_res["bias"]
+        W = cur_train_res["W"]
+        b = cur_train_res["b"]
         # TODO (5 points): Test the model
         pred = predict(W, b, x_te, config)
         acc = np.mean(pred == y_te)
