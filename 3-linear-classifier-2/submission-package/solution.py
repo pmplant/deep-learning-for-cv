@@ -38,6 +38,8 @@ from utils.features import extract_h_histogram, extract_hog
 from utils.preprocess import normalize
 from utils.regularizor import l2_grad, l2_loss
 
+from random import shuffle
+
 
 def compute_loss(W, b, x, y, config):
     """Computes the losses for each module."""
@@ -171,6 +173,8 @@ def train(x_tr, y_tr, x_va, y_va, config):
     # between this range.
 
     # TODO (1 point): Initialize b to zeros
+    W = np.random.uniform(-0.001, 0.001, size=(x_tr.shape[1], num_class))
+    b = np.zeros(num_class)
 
     # Test on validation data
     print("Testing...")
@@ -193,14 +197,18 @@ def train(x_tr, y_tr, x_va, y_va, config):
         # that we pre-create the random order and then proceed through the
         # data. Recently, people often simply grab data purely randomly from
         # the entire dataset. However, we'll stick to the more traditional way.
+        xy = list(zip(x_tr_n, y_tr))
+        shuffle(xy)
+        x_ran, y_ran = zip(*xy)
+        batch_size = len(xy)//num_batch
 
         # For each training batch
         losses = np.zeros(num_batch)
         accs = np.zeros(num_batch)
         for idx_batch in range(num_batch):
             # TODO (5 points): Construct batch
-            x_b = TODO
-            y_b = TODO
+            x_b = np.asarray(x_ran[idx_batch * batch_size: (idx_batch + 1) * batch_size])
+            y_b = np.asarray(y_ran[idx_batch * batch_size: (idx_batch + 1) * batch_size])
             # Get loss with compute_loss
             loss_cur, temp_b, pred_b = compute_loss(W, b, x_b, y_b, config)
             # Get gradient with compute_grad
@@ -210,8 +218,8 @@ def train(x_tr, y_tr, x_va, y_va, config):
             # the loss going down immediately. 100 epochs takes quite a while.
             dW, db = compute_grad(W, x_b, y_b, temp_b, config)
             # TODO (5 points): Update parameters (use `config.learning_rate`)
-            W = TODO
-            b = TODO
+            W -= config.learning_rate * dW
+            b -= config.learning_rate * db
             # Record this batches result
             losses[idx_batch] = loss_cur
             accs[idx_batch] = np.mean(pred_b == y_b)
@@ -223,13 +231,17 @@ def train(x_tr, y_tr, x_va, y_va, config):
             idx_epoch, np.mean(accs) * 100))
 
         # TODO (5 points): Test on validation data and report results
-        pred = TODO
+        pred = predict(W, b, x_va_n, config)
         acc = np.mean(pred == y_va)
         print("Epoch {} -- Validation Accuracy: {:.2f}%".format(
             idx_epoch, acc * 100))
 
         # TODO (2 points): If best validation accuracy, update W_best, b_best,
         # and best accuracy. We will only return the best W and b later.
+        if acc > best_acc:
+            W_best = W
+            b_best = b
+            best_acc = acc
 
         # Record per epoch statistics
         loss_epoch += [np.mean(losses)]
@@ -243,7 +255,7 @@ def train(x_tr, y_tr, x_va, y_va, config):
     train_res["tr_acc_epoch"] = tr_acc_epoch
     train_res["va_acc_epoch"] = va_acc_epoch
     train_res["loss_epoch"] = loss_epoch
-    TODO
+    # TODO
 
     return train_res
 
@@ -312,6 +324,12 @@ def main(config):
         # Train
         print("Training for fold {}...".format(idx_va_fold))
         # Run training
+
+        # REMOVE AFTER !!
+        x_tr=x_trva
+        y_tr=y_trva
+        x_va=x_te
+        y_va=y_te
         cur_train_res = train(x_tr, y_tr, x_va, y_va, config)
 
         # Save results

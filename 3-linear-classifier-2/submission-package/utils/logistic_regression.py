@@ -123,6 +123,9 @@ def model_grad(loss_c, x, y):
 
     # TODO (20 points): Implment the gradients
 
+    mask = np.zeros(loss_c)
+    mask[y] = 1
+    print(mask.shape)
     dW = TODO
     db = TODO
 
