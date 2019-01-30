@@ -169,9 +169,9 @@ def train(x_tr, y_tr, x_va, y_va, config):
     # between -0.001 and 0.001. To get results identical to the one in the
     # assignment package, you should initialize with uniform random numbers
     # between this range.
+    W = np.random.uniform(-0.001, 0.001, size=(x_tr.shape[1], num_class))
 
     # TODO (1 point): Initialize b to zeros
-    W = np.random.uniform(-0.001, 0.001, size=(x_tr.shape[1], num_class))
     b = np.zeros(num_class)
 
     # Test on validation data
@@ -202,6 +202,7 @@ def train(x_tr, y_tr, x_va, y_va, config):
         accs = np.zeros(num_batch)
         for idx_batch in range(num_batch):
             # TODO (5 points): Construct batch
+            # assumption: validation will be one batch, train on rest
             i0 = idx_batch * batch_size
             i1 = (idx_batch + 1) * batch_size
             x_b = x_tr_n[i0: i1]
@@ -252,6 +253,7 @@ def train(x_tr, y_tr, x_va, y_va, config):
     train_res["tr_acc_epoch"] = tr_acc_epoch
     train_res["va_acc_epoch"] = va_acc_epoch
     train_res["loss_epoch"] = loss_epoch
+    # return best values for predicting
     train_res["W"] = W_best
     train_res["b"] = b_best
     train_res["acc"] = best_acc
@@ -261,6 +263,7 @@ def train(x_tr, y_tr, x_va, y_va, config):
     return train_res
 
 def shuffletwo(x, y):
+    # shuffles the indicies of x and y together
     assert len(x) == len(y)
     p = np.random.permutation(len(x))
     return x[p], y[p]
@@ -329,11 +332,7 @@ def main(config):
         # that not all of this process needs to be here. You can also have some
         # parts of this implemented outside of the for loop.
 
-        # ----------------------------------------
-        # Train
-        print("Training for fold {}...".format(idx_va_fold))
-        # Run training
-
+        # Assumption: one fold for validation, rest for training
         x_trva, y_trva = shuffletwo(x_trva, y_trva)
         x_tr = x_trva[va_fold_size:]
         y_tr = y_trva[va_fold_size:]
@@ -342,6 +341,10 @@ def main(config):
 
         assert len(x_tr) == len(y_tr)
         assert len(x_va) == len(y_va)
+        # ----------------------------------------
+        # Train
+        print("Training for fold {}...".format(idx_va_fold))
+        # Run training
 
         cur_train_res = train(x_tr, y_tr, x_va, y_va, config)
 
@@ -377,6 +380,8 @@ def main(config):
         # average of all maximum validation accuracy. We are tuning hyper
         # parameters, and to get a model that we want to test later, we need to
         # have retrain with the best hyperparameter setup.
+
+        # take the best model from each epoch and average their accuracies
         val_acc = np.mean([max(_res["va_acc_epoch"]) for _res in train_res])
         print("Average best validation accuracy: {}%".format(
             val_acc * 100))
@@ -389,8 +394,10 @@ def main(config):
         x_tr_mean = train_res[0]["x_tr_mean"]
         x_tr_range = train_res[0]["x_tr_range"]
         best_acc = train_res[0]["acc"]
+        # assumption: best validation acuracy
         print("Best Model Accuracy: {}%".format(best_acc * 100))
         # TODO (5 points): Test the model
+        # normalize samples with training means and predict
         x_te_n, _, _ = normalize(x_te, x_tr_mean, x_tr_range)
         pred = predict(W, b, x_te_n, config)
         acc = np.mean(pred == y_te)

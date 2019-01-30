@@ -125,12 +125,16 @@ def model_grad(loss_c, x, y):
     N, C = loss_c.shape
     D = x.shape[1]
 
+    # mask of dirac vectors, 1 where j = y_i, 0 otherwise
     mask = np.zeros((N, C))
     mask[np.arange(N), y] = 1
 
+    # subtract dirac mask from losses, multiply by samples
     dW = np.reshape(x, (N, D, 1)) * np.reshape(loss_c - mask, (N, 1, C))
+    # take the mean gradient weight of every sample
     dW = np.mean(dW, axis=0)
 
+    # subtract dirac mask from losses, take the mean of every gradient bias
     db = np.mean(loss_c - mask, axis=0)
 
     return dW, db
