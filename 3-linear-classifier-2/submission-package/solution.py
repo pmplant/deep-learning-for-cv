@@ -252,9 +252,11 @@ def train(x_tr, y_tr, x_va, y_va, config):
     train_res["tr_acc_epoch"] = tr_acc_epoch
     train_res["va_acc_epoch"] = va_acc_epoch
     train_res["loss_epoch"] = loss_epoch
-    train_res["W"] = W
-    train_res["b"] = b
-    # TODO
+    train_res["W"] = W_best
+    train_res["b"] = b_best
+    train_res["acc"] = best_acc
+    train_res["x_tr_mean"] = x_tr_mean
+    train_res["x_tr_range"] = x_tr_range
 
     return train_res
 
@@ -375,17 +377,22 @@ def main(config):
         # average of all maximum validation accuracy. We are tuning hyper
         # parameters, and to get a model that we want to test later, we need to
         # have retrain with the best hyperparameter setup.
-        val_acc = va_acc_epoch
+        val_acc = np.mean([max(_res["va_acc_epoch"]) for _res in train_res])
         print("Average best validation accuracy: {}%".format(
             val_acc * 100))
 
     else:
         assert len(train_res) == 1
         # TODO (5 points): Get its W, b, x_tr_mean, x_tr_mean
-        W = cur_train_res["W"]
-        b = cur_train_res["b"]
+        W = train_res[0]["W"]
+        b = train_res[0]["b"]
+        x_tr_mean = train_res[0]["x_tr_mean"]
+        x_tr_range = train_res[0]["x_tr_range"]
+        best_acc = train_res[0]["acc"]
+        print("Best Model Accuracy: {}%".format(best_acc * 100))
         # TODO (5 points): Test the model
-        pred = predict(W, b, x_te, config)
+        x_te_n, _, _ = normalize(x_te, x_tr_mean, x_tr_range)
+        pred = predict(W, b, x_te_n, config)
         acc = np.mean(pred == y_te)
         print("Test Accuracy: {}%".format(acc * 100))
 

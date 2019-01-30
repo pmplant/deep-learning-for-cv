@@ -29,6 +29,9 @@
   %% \footrule
 }
 
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
 \begin{document}
 
 %% Set header and footer
@@ -39,7 +42,11 @@
 \author{Paul Molina-Plant}
 \maketitle
 
-\abstract{TODO}
+\abstract{In this assignment, I finished implementing a linear classifier. I
+  derived the gradient for multinomial logistic regression and implemented it. I
+  also finished implementing the training routine and cross validation.
+
+}
 
 \pagebreak
 
@@ -122,36 +129,87 @@ Finally the partial derivative of $L_i$ (4) wrt $b_i$.
 \end{split}
 \end{equation}
 
+\subsection{Summary of derivations}
+The weights gradient was,
+\begin{equation}\nonumber\frac{\partial L_i}{\partial W} = (P_{ij} -
+  \delta_{ij}) x_i \end{equation}
+The bias gradient was,
+\begin{equation}\nonumber\frac{\partial L_i}{\partial b_i} = P_{ij} - \delta_{ij}\end{equation}
 
 \pagebreak
 
-Example Section.
-
-\subsection{Example Subsection}
-
-Example Sub Section.
-
-\paragraph{Example paragraph.}
-
-
-\subsection{Example  Equation}
-
-This is how a equation looks like.
-\begin{equation}
-  y = a x^2 + b x + c
-  \;\;,
-\end{equation}
-where an inline equation looks like $a=b$.
-
-\subsection{Example  Figure}
-
-To put a figure, you can do as shown in Fig.~\ref{fig:eg}.
-%%
-\begin{figure}
+\section{Training curves}
+The following curves were obtained by running the HOG model on cifar-10 dataset
+with default parameters.
+\subsection{Linear SVM}
+Best validation accuracy: 46.58\% \\
+Test accuracy: 46.47\% \\
+\begin{figure}[h]
   \centering
-  \rule{2cm}{2cm} % Replace this with below, and your actual figure
-  %% \includegraphics[width=0.4 \textwidth]{input.jpg}
-  \caption{Example caption.}
+  \includegraphics[scale=0.60]{hog_svm_accuracy}
+  \caption{Validation Accuracy.}
+  \label{fig:eg}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{hog_svm_loss}
+  \caption{Validation Loss.}
+  \label{fig:eg}
+\end{figure}
+
+\pagebreak
+
+\subsection{Logistic Regression}
+Best validation accuracy: 42.60\% \\
+Test accuracy: 42.449\% \\
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{hog_logreg_accuracy}
+  \caption{Validation Accuracy.}
+  \label{fig:eg}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{hog_logreg_loss}
+  \caption{Validation Loss.}
+  \label{fig:eg}
+\end{figure}
+
+\pagebreak
+
+
+\section{Cross validation results}
+The following validation results were obtained by running the HOG model on
+cifar-10 dataset with logistic regression and cross validation. Learning rate
+was adjusted between tests, other parameters were left default.
+\subsection{Learning Rate $10^-4$}
+Average best validation accuracy: 42.95%
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{hog_logreg_cv_lre4_acc}
+  \caption{Validation Accuracy.}
+  \label{fig:eg}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{ihog_logreg_cv_lre4_loss}
+  \caption{Validation Loss.}
+  \label{fig:eg}
+\end{figure}
+\pagebreak
+
+\subsection{Learning Rate $10^-2$}
+Average best validation accuracy: 42.95%
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{hog_logreg_cv_lre4_acc}
+  \caption{Validation Accuracy.}
+  \label{fig:eg}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.60]{ihog_logreg_cv_lre4_loss}
+  \caption{Validation Loss.}
   \label{fig:eg}
 \end{figure}
 
