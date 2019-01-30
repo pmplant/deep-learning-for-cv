@@ -304,12 +304,12 @@ def main(config):
     # Cross validation setup. Note here that if we set cross validation to
     # False, which is the default, we'll just return results for the first
     # fold.
+
+    va_fold_size = len(x_trva) // num_fold
     if config.cross_validate:
         va_fold_to_test = np.arange(num_fold)
-        va_fold_size = len(x_trva) // num_fold
     else:
         va_fold_to_test = np.arange(1)
-        va_fold_size = len(x_trva)
 
     # ----------------------------------------
     # Cross validation loop
@@ -321,6 +321,7 @@ def main(config):
     # labels. Once you have the framework running, you can then implement the
     # cross validation loop.
     train_res = []
+
     for idx_va_fold in va_fold_to_test:
         # TODO (10 points): Create train and validation data using folds. Note
         # that not all of this process needs to be here. You can also have some
@@ -336,6 +337,9 @@ def main(config):
         y_tr = y_trva[va_fold_size:]
         x_va = x_trva[:va_fold_size]
         y_va = y_trva[:va_fold_size]
+
+        assert len(x_tr) == len(y_tr)
+        assert len(x_va) == len(y_va)
 
         cur_train_res = train(x_tr, y_tr, x_va, y_va, config)
 
@@ -371,7 +375,7 @@ def main(config):
         # average of all maximum validation accuracy. We are tuning hyper
         # parameters, and to get a model that we want to test later, we need to
         # have retrain with the best hyperparameter setup.
-        val_acc = TODO
+        val_acc = va_acc_epoch
         print("Average best validation accuracy: {}%".format(
             val_acc * 100))
 
