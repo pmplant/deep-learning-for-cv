@@ -218,8 +218,8 @@ def train(x_tr, y_tr, x_va, y_va, config):
             # the loss going down immediately. 100 epochs takes quite a while.
             dW, db = compute_grad(W, x_b, y_b, temp_b, config)
             # TODO (5 points): Update parameters (use `config.learning_rate`)
-            W -= config.learning_rate * dW
-            b -= config.learning_rate * db
+            W -= dW * config.learning_rate
+            b -= db * config.learning_rate
             # Record this batches result
             losses[idx_batch] = loss_cur
             accs[idx_batch] = np.mean(pred_b == y_b)
@@ -255,6 +255,8 @@ def train(x_tr, y_tr, x_va, y_va, config):
     train_res["tr_acc_epoch"] = tr_acc_epoch
     train_res["va_acc_epoch"] = va_acc_epoch
     train_res["loss_epoch"] = loss_epoch
+    train_res["weights"] = W
+    train_res["bias"] = b
     # TODO
 
     return train_res
@@ -371,8 +373,10 @@ def main(config):
     else:
         assert len(train_res) == 1
         # TODO (5 points): Get its W, b, x_tr_mean, x_tr_mean
+        W = cur_train_res["weights"]
+        b = cur_train_res["bias"]
         # TODO (5 points): Test the model
-        pred = TODO
+        pred = predict(W, b, x_te, config)
         acc = np.mean(pred == y_te)
         print("Test Accuracy: {}%".format(acc * 100))
 

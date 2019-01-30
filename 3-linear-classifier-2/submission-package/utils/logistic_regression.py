@@ -122,12 +122,16 @@ def model_grad(loss_c, x, y):
 
 
     # TODO (20 points): Implment the gradients
+    N, C = loss_c.shape
+    D = x.shape[1]
 
-    mask = np.zeros(loss_c)
-    mask[y] = 1
-    print(mask.shape)
-    dW = TODO
-    db = TODO
+    mask = np.zeros((N, C))
+    mask[np.arange(N), y] = 1
+
+    dW = np.reshape(x, (N, D, 1)) * np.reshape(loss_c - mask, (N, 1, C))
+    dW = np.mean(dW, axis=0)
+
+    db = np.mean(loss_c - mask, axis=0)
 
     return dW, db
 
