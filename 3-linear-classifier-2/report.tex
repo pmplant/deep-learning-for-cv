@@ -42,11 +42,30 @@
 \author{Paul Molina-Plant}
 \maketitle
 
-\abstract{In this assignment, I finished implementing a linear classifier. I
-  derived the gradient for multinomial logistic regression and implemented it. I
-  also finished implementing the training routine and cross validation.
+\abstract{In this assignment, I finished a implementing a linear classifier.
+  This included implementing the loss function for logistic regression and
+  implementing cross validation. \\
 
-}
+  In section 1, I derive the gradient for cross entropy use in logistic
+  regression. \\
+  The weights gradient is,
+  \begin{equation}\nonumber\frac{\partial L_i}{\partial W} = (P_{ij} -
+    \delta_{ij}) x_i \end{equation}
+  And the bias gradient is,
+  \begin{equation}\nonumber\frac{\partial L_i}{\partial b_i} = P_{ij} -
+    \delta_{ij}\end{equation}
+
+  In section 2, I plotted the results of the classifier being run on cifar10 in linear svm and
+  logistic regression mode. For this dataset, linear svm produced a marginally more
+  accurate model. \\
+
+  In section 3, I plotted the results of the classifier being run in logistic
+  regression mode with cross validation. I ran the classifer twice, once with a
+  learning rate of $lr_1 = 10^{-4}$ and then with $lr_2 = 10^{-2}$. I observed
+  that the accuracy and loss plots of $lr_1$ stabalize quickly, which means
+  $lr_1$ is a good learning rate. In contrast, the plots of $lr_2$ never
+  stabilizes because the learning rate is too high, causing the descent algorithm
+  to consistently overshoot.
 
 \pagebreak
 
@@ -140,7 +159,8 @@ The bias gradient was,
 
 \section{Training curves}
 The following curves were obtained by running the HOG model on cifar-10 dataset
-with default parameters.
+with default parameters. Linear SVM was marginally more accurate, but both
+performed similarly.
 \subsection{Linear SVM}
 Best validation accuracy: 46.58\% \\
 Test accuracy: 46.47\% \\
@@ -183,7 +203,9 @@ The following validation results were obtained by running the HOG model on
 cifar-10 dataset with logistic regression and cross validation. Learning rate
 was adjusted between tests, other parameters were left default.
 \subsection{Learning Rate $10^-4$}
-Average best validation accuracy: 42.95%
+Average best validation accuracy: 42.95\% \\
+Good learning rate because accuracy curve stabilizes at 43\% and loss curve
+rapidly falls off and stabilizes.
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.60]{hog_logreg_cv_lre4_acc}
@@ -192,23 +214,26 @@ Average best validation accuracy: 42.95%
 \end{figure}
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.60]{ihog_logreg_cv_lre4_loss}
+  \includegraphics[scale=0.60]{hog_logreg_cv_lre4_loss}
   \caption{Validation Loss.}
   \label{fig:eg}
 \end{figure}
 \pagebreak
 
 \subsection{Learning Rate $10^-2$}
-Average best validation accuracy: 42.95%
+Average best validation accuracy: 43.77\% \\
+A bad learning rate because accuracy and loss curves never stabilize. This is
+caused by the learning rate being too high, which causes the descent algorithm
+to overshoot.
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.60]{hog_logreg_cv_lre4_acc}
+  \includegraphics[scale=0.60]{hog_logreg_cv_lre2_acc}
   \caption{Validation Accuracy.}
   \label{fig:eg}
 \end{figure}
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.60]{ihog_logreg_cv_lre4_loss}
+  \includegraphics[scale=0.60]{hog_logreg_cv_lre2_loss}
   \caption{Validation Loss.}
   \label{fig:eg}
 \end{figure}
