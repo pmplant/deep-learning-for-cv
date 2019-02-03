@@ -81,7 +81,7 @@ def train(config):
     # TODO (2 points): Initialize datasets for both training and validation
     train_data = TODO
     valid_data = TODO
-    
+
     # We'll load the mean and the standard deviation of the data that we
     # compute previously
     x_tr_mean = np.load("{}_mean.npy".format(config.feature_type))
@@ -155,7 +155,7 @@ def train(config):
             print("Checkpoint found! Resuming")
 
             TODO
-            
+
             # Note that we do not resume the epoch, since we will never be able
             # to properly recover the shuffling, unless we remember the random
             # seed, for example. For simplicity, we will simply ignore this,
@@ -221,7 +221,7 @@ def train(config):
                 TODO
                 #
                 # NOTE HOW WE ARE LOOPING OVER THE ENTIRE VALIDATION SET HERE.
-                # 
+                #
                 for data in va_data_loader:
 
                     # Split the data
@@ -270,7 +270,6 @@ if __name__ == "__main__":
     if len(unparsed) > 0:
         print_usage()
         exit(1)
-
     main(config)
 
 

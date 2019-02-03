@@ -42,17 +42,17 @@ class CIFAR10Dataset(data.Dataset):
 
     def __init__(self, config, mode):
         """Initialization.
-        
+
         Parameters
         ----------
 
         config:
             Configuration object that holds the command line arguments.
-        
+
         mode: str
             A string detailing which split for this dataset object to load. For
             example, train, valid, test.
-        
+
 
         Notes
         -----
@@ -78,7 +78,7 @@ class CIFAR10Dataset(data.Dataset):
         # good enough) and update `self.data`, and at the same time save the
         # shape of each sample (not the entire data shape!)  to
         # `self.sample_shp`.
-        # 
+        #
         # It turns out extracting data on-the-fly on a normal PC takes longer!
         # Since CIFAR10 is not a large dataset, we'll do it here. With large
         # datasets, we don't have this option.
@@ -90,12 +90,43 @@ class CIFAR10Dataset(data.Dataset):
         # previous assignments!!!
         print("Extracting features for the entire {} set ... ".format(
             mode), end="")
-        TODO
+
+        # Extract sample shapes
+        self.sample_shp = torch.tensor([
+            _x.shape for _x in self.data
+        ])
+
+        if feature_type == "hog":
+            # Extract hog
+            self.data = torch.tensor([
+                hog(_x.mean(axis=-1)) for _x in self.data
+            ])
+
+        elif feature_type == "h_histogram":
+            # Convert data into hsv's, and take only the h
+            hue = np.asarray([
+                rgb2hsv(_x)[:, :, 0] for _x in self.data
+            ])
+
+            # Create bins to be used
+            bins = np.linspace(0, 1, 17)
+
+            # Create histogram
+            h_hist = []
+            for _h in hue:
+                hist, _ = np.histogram(_h, bins)
+                h_hist += [hist]
+                h_hist = np.array(h_hist)
+
+            self.data = torch.tensor(h_hist)
+
+        else:
+            UNIMPLEMENTED
         print("done.")
 
     def __len__(self):
         """Returns number of samples.
-        
+
 
         Returns
         -------
@@ -104,17 +135,18 @@ class CIFAR10Dataset(data.Dataset):
         """
 
         # TODO (5 points): return the number of elements at `self.data`
+        return self.data.size[0]
 
     def __getitem__(self, index):
-        """Function to grab one data sample 
-        
+        """Function to grab one data sample
+
         Parameters
         ----------
-        
+
         index: int
             Index to the sample that we are trying to extract.
 
-        
+
         Returns
         -------
 
@@ -122,7 +154,7 @@ class CIFAR10Dataset(data.Dataset):
             A torch tensor that holds the data. For GPU compatibility in the
             future, we will develop the habit of converting everythiing in to
             `float32`
-        
+
         label_cur: int
             The label of the current data sample. This is typically a simple
             indexing operation to the label array
@@ -130,8 +162,8 @@ class CIFAR10Dataset(data.Dataset):
         """
 
         # TODO (10 points): Implement the get_item method
-        TODO
-
+        data_cur = self.data[index]
+        label_cur = self.label[index]
 
         return data_cur, label_cur
 
