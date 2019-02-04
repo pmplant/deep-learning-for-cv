@@ -88,13 +88,24 @@ def train(config):
     x_tr_std = np.load("{}_std.npy".format(config.feature_type))
 
     # TODO (2 points): Create data loader for training and validation.
-    tr_data_loader = TODO
-    va_data_loader = TODO
+
+    # dataloaders automate and paralellize the batching and shuffling process
+    tr_data_loader = DataLoader(dataset=train_data,
+                                batch_size=config.batch_size,
+                                shuffle=True,
+                                num_workers=2)
+    va_data_loader = DataLoader(dataset=valid_data,
+                                batch_size=config.batch_size,
+                                shuffle=False,
+                                num_workers=2)
 
     # TODO (1 points): Create model instance. We will use
     # `train_data.sample_shp`, mean and std from training data for
     # initialization.
-    model = TODO
+    model = MyNetwork(config,
+                      train_data.sample_shp,
+                      train_data.mean,
+                      train_data.std)
     # Move model to gpu if cuda is available
     if torch.cuda.is_available():
         model = model.cuda()
@@ -153,7 +164,7 @@ def train(config):
             # a good idea to code the saving part first and then code this
             # part.
             print("Checkpoint found! Resuming")
-
+            model =
             TODO
 
             # Note that we do not resume the epoch, since we will never be able

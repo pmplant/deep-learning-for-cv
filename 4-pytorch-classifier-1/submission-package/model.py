@@ -57,6 +57,7 @@ class MyNetwork(nn.Module):
         # Store configuration
         self.config = config
 
+
         # TODO (5 points): Create torch.Tensor for holding mean, std. We will
         # apply these later, and if nothing is given, we would want to do
         # nothing to our data, i.e. mean should be set to zeros, std should be
@@ -118,7 +119,8 @@ class MyNetwork(nn.Module):
         """
 
         # TODO (10 points): Implement the forward pass
-        TODO
+        x_norm = (x - self.mean) / (torch.max(x) - torch.min(x)).item()
+        x = self.fc(x_norm)
 
         return x
 
