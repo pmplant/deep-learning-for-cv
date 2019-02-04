@@ -79,8 +79,8 @@ def train(config):
     """
 
     # TODO (2 points): Initialize datasets for both training and validation
-    train_data = TODO
-    valid_data = TODO
+    train_data = CIFAR10Dataset(config, "train")
+    valid_data = CIFAR10Dataset(config, "valid")
 
     # We'll load the mean and the standard deviation of the data that we
     # compute previously

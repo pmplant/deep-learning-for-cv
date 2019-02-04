@@ -92,36 +92,20 @@ class CIFAR10Dataset(data.Dataset):
             mode), end="")
 
         # Extract sample shapes
-        self.sample_shp = torch.tensor([
-            _x.shape for _x in self.data
-        ])
+        self.sample_shp = torch.Tensor([_x.shape for _x in self.data])
 
-        if feature_type == "hog":
-            # Extract hog
-            self.data = torch.tensor([
-                hog(_x.mean(axis=-1)) for _x in self.data
-            ])
-
-        elif feature_type == "h_histogram":
-            # Convert data into hsv's, and take only the h
-            hue = np.asarray([
-                rgb2hsv(_x)[:, :, 0] for _x in self.data
-            ])
-
-            # Create bins to be used
-            bins = np.linspace(0, 1, 17)
-
-            # Create histogram
-            h_hist = []
-            for _h in hue:
-                hist, _ = np.histogram(_h, bins)
-                h_hist += [hist]
-                h_hist = np.array(h_hist)
-
-            self.data = torch.tensor(h_hist)
-
+        # use existing feature extraction functions and convert the output to torch tensors
+        if config.feature_type == "hog":
+            self.data = torch.from_numpy(extract_hog(self.data))
+        elif config.feature_type == "h_histogram":
+            self.data = torch.from_numpy(extract_h_histogram(self.data))
         else:
             UNIMPLEMENTED
+
+        assert type(self.sample_shp) == torch.Tensor
+        assert type(self.data) == torch.Tensor
+        print(self.sample_shp.size())
+        print(self.data.size())
         print("done.")
 
     def __len__(self):
@@ -163,7 +147,7 @@ class CIFAR10Dataset(data.Dataset):
 
         # TODO (10 points): Implement the get_item method
         data_cur = self.data[index]
-        label_cur = self.label[index]
+        label_cur = self.label[index].item()
 
         return data_cur, label_cur
 
