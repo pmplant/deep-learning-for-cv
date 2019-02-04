@@ -61,20 +61,22 @@ class MyNetwork(nn.Module):
         # apply these later, and if nothing is given, we would want to do
         # nothing to our data, i.e. mean should be set to zeros, std should be
         # set to ones. We also want all tensors to be `float32`
-        TODO
-        TODO
+
+        # print(input_shape.shape(), mean.shape(), std.shape())
+        self.mean = torch.zeros(input_shp, dtype=torch.float32)
+        self.std = torch.ones(input_shp, dtype=torch.float32)
 
         # TODO (5 points): Wrap the created Tensors as parameters, so that we
         # can easily save and load (we can later get a list of everything
         # inside the morel by doing model.parameters(). Also make sure we mark
         # that these will not be updated by the optimizer by saying that
         # gradient computation should not be performed
-        self.mean = TODO
-        self.std = TODO
+        self.mean = nn.Parameter(mean, requires_grad=False)
+        self.std = nn.Parameter(std, requires_grad=False)
 
         # If mean, std is provided, update values accordingly
         if mean is not None and std is not None:
-            # 
+            #
             # ALTHOUGH THIS IS NOT PART OF YOUR IMPLEMENTATION, SEE BELOW.
             #
             # Note here that we use [:] so that actually assign the values, not
@@ -87,11 +89,12 @@ class MyNetwork(nn.Module):
         # pass. Note that the output dimension of this layer should be
         # `config.num_class`. This layer does what we implemented earlier on
         # the previous assignments.
-        TODO
+        self.fc = nn.Linear(config.num_class)
+
 
     def forward(self, x):
-        """Forward pass for the model 
-        
+        """Forward pass for the model
+
         Parameters
         ----------
 
@@ -101,7 +104,7 @@ class MyNetwork(nn.Module):
             elements in the batch, and C is the number of dimension of our
             feature. H, W is when we use raw images. In the current assignment,
             it wil l be of shape BC.
-        
+
         Returns
         -------
 
