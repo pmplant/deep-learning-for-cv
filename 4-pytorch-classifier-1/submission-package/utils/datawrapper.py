@@ -22,7 +22,7 @@
 
 # Code:
 
-import numpy as np
+# import numpy as np
 import torch
 from torch.utils import data
 
@@ -92,20 +92,19 @@ class CIFAR10Dataset(data.Dataset):
             mode), end="")
 
         # Extract sample shapes
-        self.sample_shp = torch.Tensor([_x.shape for _x in self.data])
+        self.sample_shp = [_x.shape for _x in self.data]
 
-        # use existing feature extraction functions and convert the output to torch tensors
+        # use existing feature extraction functions and convert the output
+        # to torch tensors
         if config.feature_type == "hog":
             self.data = torch.from_numpy(extract_hog(self.data))
         elif config.feature_type == "h_histogram":
             self.data = torch.from_numpy(extract_h_histogram(self.data))
         else:
-            UNIMPLEMENTED
+            raise Exception("RGB unimplemented")
 
         assert type(self.sample_shp) == torch.Tensor
         assert type(self.data) == torch.Tensor
-        print(self.sample_shp.size())
-        print(self.data.size())
         print("done.")
 
     def __len__(self):
@@ -119,7 +118,7 @@ class CIFAR10Dataset(data.Dataset):
         """
 
         # TODO (5 points): return the number of elements at `self.data`
-        return self.data.size[0]
+        return self.data.shape[0]
 
     def __getitem__(self, index):
         """Function to grab one data sample

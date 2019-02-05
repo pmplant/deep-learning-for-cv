@@ -104,8 +104,8 @@ def train(config):
     # initialization.
     model = MyNetwork(config,
                       train_data.sample_shp,
-                      train_data.mean,
-                      train_data.std)
+                      x_tr_mean,
+                      x_tr_std)
     # Move model to gpu if cuda is available
     if torch.cuda.is_available():
         model = model.cuda()
@@ -164,8 +164,8 @@ def train(config):
             # a good idea to code the saving part first and then code this
             # part.
             print("Checkpoint found! Resuming")
-            model =
-            TODO
+            model = torch.load_state_dict(torch.load(checkpoint_file))
+            model.train()
 
             # Note that we do not resume the epoch, since we will never be able
             # to properly recover the shuffling, unless we remember the random
@@ -203,24 +203,42 @@ def train(config):
             # update using the optimizer, and finally prepare the optimizer for
             # the next iteration.
 
-            TODO
+            scores = model(x)
+            loss = data_loss(scores, y)
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
 
             # Monitor results every report interval
             if iter_idx % config.rep_intv == 0:
                 # TODO (5 points): Compute accuracy (No gradients
                 # required). We'll wrapp this part so that we prevent torch
                 # from computing gradients.
-                TODO
+                with torch.no_grad():
+                    # From PyTorch tutorial
+                    # https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
+                    total = 0
+                    correct = 0
+                    for data in va_data_loader:
+                        images, labels = data
+                        outputs = model(images)
+                        _, predicted = torch.max(outputs.data, 1)
+                        total += labels.size(0)
+                        correct += (predicted == labels).sum().item()
+                    accuracy = correct / total
+
                 # TODO (3 points): Write loss and accuracy to tensorboard,
                 # using keywords `loss` and `accuracy`.
-                TODO
+                tr_writer.add_scalar('loss', loss, iter_idx)
+                tr_writer.add_scalar('accuracy', accuracy, iter_idx)
+
                 # TODO (2 points): Let's also save our most recent model so
                 # that we can resume. We'll save this model in path defined by
                 # `checkpoint_file`.  Note that in order to resume, we would
                 # need to save, `iter_idx`, `best_va_acc`, `model`, and
                 # `optimizer`. Note that for simplicity, we will not save
                 # epoch.
-                TODO
+                torch.save(model.state_dict(), checkpoint_file)
 
             # Validate results every validation interval
             if iter_idx % config.val_intv == 0:
@@ -229,8 +247,8 @@ def train(config):
                 va_loss = []
                 va_acc = []
                 # TODO (2 points): Set model for evaluation
-                TODO
-                #
+                model.eval()
+                # 
                 # NOTE HOW WE ARE LOOPING OVER THE ENTIRE VALIDATION SET HERE.
                 #
                 for data in va_data_loader:
@@ -245,10 +263,19 @@ def train(config):
 
                     # TODO (3 points): Apply forward pass to compute the losses
                     # and accuracies for each of the validation batches. Note
-                    # that we will again explicitly diable gradients.
-                    TODO
+                    # that we will again explicitly disable gradients.
+
+                    with torch.no_grad():
+                        scores = model(x)
+                        loss = data_loss(scores, y)
+                        _, predicted = torch.max(scores.data, 1)
+                        total = y.size(0)
+                        correct = (predicted == y).sum().item()
+                        va_acc += [correct / total]
+                        va_loss += [loss]
+
                 # TODO (1 point): Set model back for training
-                TODO
+                model.train()
                 # Take average
                 va_loss = np.mean(va_loss)
                 va_acc = np.mean(va_acc)
@@ -257,8 +284,11 @@ def train(config):
                 # the validation writer. Also check if the best validation
                 # accuracy is achieved, and save the model and all necessary
                 # states using `torch.save` as `bestmodel_file`
-                TODO
-
+                va_writer.add_scalar('loss', va_loss, iter_idx)
+                va_writer.add_scalar('accuracy', va_acc, iter_idx)
+                if va_acc > best_va_acc:
+                    best_va_acc = va_acc
+                    torch.save(model.state_dict(), bestmodel_file)
 
 
 def main(config):
