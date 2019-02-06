@@ -50,7 +50,6 @@ def data_criterion(config):
     """Returns the loss object based on the commandline argument for the data term
 
     """
-
     if config.loss_type == "cross_entropy":
         data_loss = nn.CrossEntropyLoss()
     elif config.loss_type == "svm":
@@ -164,7 +163,7 @@ def train(config):
             # a good idea to code the saving part first and then code this
             # part.
             print("Checkpoint found! Resuming")
-            model = torch.load_state_dict(torch.load(checkpoint_file))
+            model.load_state_dict(torch.load(checkpoint_file))
             model.train()
 
             # Note that we do not resume the epoch, since we will never be able

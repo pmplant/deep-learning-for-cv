@@ -62,11 +62,8 @@ class MyNetwork(nn.Module):
         # apply these later, and if nothing is given, we would want to do
         # nothing to our data, i.e. mean should be set to zeros, std should be
         # set to ones. We also want all tensors to be `float32`
-        self.mean = torch.zeros(len(input_shp), dtype=torch.float32)
-        self.std = torch.ones(len(input_shp), dtype=torch.float32)
-
-        print(len(input_shp))
-        print(self.mean.size())
+        self.mean = torch.zeros(input_shp[0][0], dtype=torch.float32)
+        self.std = torch.ones(input_shp[0][0], dtype=torch.float32)
 
         # TODO (5 points): Wrap the created Tensors as parameters, so that we
         # can easily save and load (we can later get a list of everything
@@ -75,9 +72,6 @@ class MyNetwork(nn.Module):
         # gradient computation should not be performed
         self.mean = nn.Parameter(self.mean, requires_grad=False)
         self.std = nn.Parameter(self.std, requires_grad=False)
-
-        print(self.mean.size())
-        print(torch.from_numpy(mean.astype(np.float32)).size())
 
         # If mean, std is provided, update values accordingly
         if mean is not None and std is not None:
@@ -94,7 +88,7 @@ class MyNetwork(nn.Module):
         # pass. Note that the output dimension of this layer should be
         # `config.num_class`. This layer does what we implemented earlier on
         # the previous assignments.
-        self.fc = nn.Linear(input_shp[0], config.num_class)
+        self.fc = nn.Linear(input_shp[0][0], config.num_class)
 
     def forward(self, x):
         """Forward pass for the model
@@ -122,7 +116,11 @@ class MyNetwork(nn.Module):
         """
 
         # TODO (10 points): Implement the forward pass
-        x_norm = (x - self.mean) / (torch.max(x) - torch.min(x)).item()
+        max_x = torch.max(x).item()
+        min_x = torch.min(x).item()
+        diff_x = x - self.mean
+        x_norm = diff_x / (max_x - min_x)
+        # x_norm = (x - self.mean) / (torch.max(x) - torch.min(x)).item()
         x = self.fc(x_norm)
 
         return x
