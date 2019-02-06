@@ -203,7 +203,7 @@ def train(config):
             # the next iteration.
 
             scores = model(x)
-            loss = data_loss(scores, y)
+            loss = data_loss(scores, y) + model_loss(model)
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
@@ -213,23 +213,18 @@ def train(config):
                 # TODO (5 points): Compute accuracy (No gradients
                 # required). We'll wrapp this part so that we prevent torch
                 # from computing gradients.
+                tr_accuracy = 0
+                tr_loss = 0
                 with torch.no_grad():
-                    # From PyTorch tutorial
-                    # https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
-                    total = 0
-                    correct = 0
-                    for data in va_data_loader:
-                        images, labels = data
-                        outputs = model(images)
-                        _, predicted = torch.max(outputs.data, 1)
-                        total += labels.size(0)
-                        correct += (predicted == labels).sum().item()
-                    accuracy = correct / total
+                    _, tr_predict = torch.max(scores.data, 1)
+                    tr_correct = (tr_predict == y).sum().item()
+                    tr_accuracy = tr_correct / y.size(0)
+                    tr_loss = torch.mean(loss)
 
                 # TODO (3 points): Write loss and accuracy to tensorboard,
                 # using keywords `loss` and `accuracy`.
-                tr_writer.add_scalar('loss', loss, iter_idx)
-                tr_writer.add_scalar('accuracy', accuracy, iter_idx)
+                tr_writer.add_scalar('loss', tr_loss, iter_idx)
+                tr_writer.add_scalar('accuracy', tr_accuracy, iter_idx)
 
                 # TODO (2 points): Let's also save our most recent model so
                 # that we can resume. We'll save this model in path defined by
@@ -247,6 +242,7 @@ def train(config):
                 va_acc = []
                 # TODO (2 points): Set model for evaluation
                 model.eval()
+
                 # 
                 # NOTE HOW WE ARE LOOPING OVER THE ENTIRE VALIDATION SET HERE.
                 #
@@ -263,10 +259,10 @@ def train(config):
                     # TODO (3 points): Apply forward pass to compute the losses
                     # and accuracies for each of the validation batches. Note
                     # that we will again explicitly disable gradients.
-
+                    # https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py
                     with torch.no_grad():
                         scores = model(x)
-                        loss = data_loss(scores, y)
+                        loss = data_loss(scores, y) + model_loss(model)
                         _, predicted = torch.max(scores.data, 1)
                         total = y.size(0)
                         correct = (predicted == y).sum().item()
