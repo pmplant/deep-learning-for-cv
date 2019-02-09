@@ -116,11 +116,7 @@ class MyNetwork(nn.Module):
         """
 
         # TODO (10 points): Implement the forward pass
-        max_x = torch.max(x).item()
-        min_x = torch.min(x).item()
-        diff_x = x - self.mean
-        x_norm = diff_x / (max_x - min_x)
-        # x_norm = (x - self.mean) / (torch.max(x) - torch.min(x)).item()
+        x_norm = (x - self.mean) / self.std
         x = self.fc(x_norm)
 
         return x

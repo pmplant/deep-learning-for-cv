@@ -1,0 +1,1 @@
+CIFAR-10 python version - University of Toronto - https://www.cs.toronto.edu/~kriz/cifar.html

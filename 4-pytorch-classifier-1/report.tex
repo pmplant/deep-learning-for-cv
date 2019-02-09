@@ -4,14 +4,14 @@
 %% Class name and Assignment number
 %%
 \newcommand{\courseName}{Introduction~to~Deep~Learning~for~Computer~Vision}
-\newcommand{\assignName}{Assignment~2:~Simple~Linear~Classifier}
+\newcommand{\assignName}{Assignment~4:~PyTorch Classifier I}
 
 %% Packages
 \usepackage{amsmath,amsfonts,amssymb,amsthm,dsfont}
 \usepackage{graphicx}
 \usepackage[bookmarks=false]{hyperref}
 \usepackage{color}
-\usepackage{lipsum}
+\usepackage{float}
 
 %% Paper format
 \usepackage{geometry}
@@ -37,40 +37,27 @@
 
 %% Title
 \title{\courseName\\\assignName}
-\author{Kwang Moo Yi}
+\author{Paul Molina-Plant}
 \maketitle
 
-\abstract{This is an example abstract. \lipsum[1]}
+\abstract{In this assignment, we implemented a linear classifier using PyTorch
+  and visualized the accuracy and loss of our model in Tensorboard.}
 
-\section{Example Section}
+\section{Results}
 
-Example Section. \lipsum[1]
-
-\subsection{Example Subsection}
-
-Example Sub Section. \lipsum[1]
-
-\paragraph{Example paragraph.} \lipsum[1]
-
-
-\subsection{Example  Equation}
-
-This is how a equation looks like.
-\begin{equation}
-  y = a x^2 + b x + c
-  \;\;, 
-\end{equation}
-where an inline equation looks like $a=b$.
-
-\subsection{Example  Figure}
-
-To put a figure, you can do as shown in Fig.~\ref{fig:eg}.
-%% 
-\begin{figure}
+I implemented the classifier by following the specifications and consulting the
+appropriate PyTorch documentation. I trained and validated the model on the CIFAR10 dataset
+with default config parameters. The final losses and accuracies are highlighted on each plot.
+\begin{figure}[H]
   \centering
-  \rule{2cm}{2cm} % Replace this with below, and your actual figure
-  %% \includegraphics[width=0.4 \textwidth]{input.jpg}
-  \caption{Example caption.}
+  \includegraphics[scale=2.0]{accuracy.png}
+  \caption{training and validation accuracy after 100 epochs}
+  \label{fig:eg}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=2.0]{loss.png}
+  \caption{training and validation loss after 100 epochs}
   \label{fig:eg}
 \end{figure}
 

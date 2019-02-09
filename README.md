@@ -1,2 +1,4 @@
-## Pyenv tutorial
-https://medium.freecodecamp.org/manage-multiple-python-versions-and-virtual-environments-venv-pyenv-pyvenv-a29fb00c296f
+# Deep Learning for CV
+
+## Starting Tensorboard
+Start the tensorboard server with "tensorboard --logdir logs" from the submission-package directory, then open "http://localhost:6006" in a browser.
