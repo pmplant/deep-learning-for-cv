@@ -87,12 +87,12 @@ class MyNetwork(nn.Module):
         # connect them with ReLU activation functions (see torch.nn.ReLU). We
         # will procedurally generate them as class attributes according to the
         # configurations. `setattr` Python builtin will be helpful here.
-        self.input = nn.Linear(input_shp, config.num_unit)
+        self.linear_0 = nn.Linear(input_shp[0], config.num_unit)
 
         # dynamically create hidden layers
-        for i in range(config.num_hidden):
+        for i in range(1, config.num_hidden):
             m = nn.Linear(config.num_unit, config.num_unit)
-            setattr(self, "hidden" + str(i), m)
+            setattr(self, "linear_{}".format(str(i)), m)
 
         self.output = nn.Linear(config.num_unit, config.num_class)
 
@@ -127,13 +127,12 @@ class MyNetwork(nn.Module):
         # TODO: (20 points) Apply layers. One thing that could be helpful is
         # the `getattr` Python builtin, which is the opposite of setattr.
         # above.
-
-        x = nn.ReLU(self.input(x))
-
+        r = nn.ReLU()
         # apply hidden layers
         for i in range(self.config.num_hidden):
-            m = getattr(self, "hidden" + str(i))
+            m = getattr(self, "linear_{}".format(str(i)))
             x = m(x)
+            x = r(x)
 
         return self.output(x)
 
