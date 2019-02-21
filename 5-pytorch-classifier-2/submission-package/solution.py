@@ -260,7 +260,7 @@ def train(config):
                 model = model.eval()
                 #
                 # NOTE HOW WE ARE LOOPING OVER THE ENTIRE VALIDATION SET HERE.
-                # 
+                #
                 for data in va_data_loader:
 
                     # Split the data
@@ -314,7 +314,7 @@ def test(config):
     """Test routine"""
 
     # TODO: (10 points) Initialize Dataset for testing.
-    test_data = TODO
+    test_data = CIFAR10Dataset(config, mode="test")
 
     # Load the mean and the standard deviation of the data that we compute
     # previously
@@ -343,15 +343,35 @@ def test(config):
     model_loss = model_criterion(config)
 
     # TODO: (20 points) Load our best model and set model for testing
-    TODO
+    bestmodel_file = os.path.join(config.save_dir, "best_model.pth")
+    load_res = torch.load(bestmodel_file)
+    model.load(load_res["model"])
+    model.test()
 
     # TODO: (10 points) Implement The Test loop
     prefix = "Testing: "
     te_loss = []
     te_acc = []
     for data in tqdm(te_data_loader, desc=prefix):
+        # Split data
+        x, y = data
 
-        TODO
+        # Send to GPU
+        if torch.cude.is_available():
+            x = x.cuda()
+            y = y.cuda()
+
+        # Obtain scores from forward pass
+        logits = model.forward(x)
+
+        # Compute the loss
+        loss = data_loss(logits, y) + model_loss(model)
+        te_loss += [loss]
+
+        # Predict on model
+        pred = torch.argmax(logits, dim=1)
+        acc = torch.mean(torch.eq(pred, y).float()) * 100.0
+        te_acc += [acc]
 
     # Report Test loss and accuracy
     print("Test Loss = {}".format(np.mean(te_loss)))
