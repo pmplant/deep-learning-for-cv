@@ -345,8 +345,8 @@ def test(config):
     # TODO: (20 points) Load our best model and set model for testing
     bestmodel_file = os.path.join(config.save_dir, "best_model.pth")
     load_res = torch.load(bestmodel_file)
-    model.load(load_res["model"])
-    model.test()
+    model.load_state_dict(load_res["model"])
+    model.eval()
 
     # TODO: (10 points) Implement The Test loop
     prefix = "Testing: "
@@ -357,25 +357,28 @@ def test(config):
         x, y = data
 
         # Send to GPU
-        if torch.cude.is_available():
+        if torch.cuda.is_available():
             x = x.cuda()
             y = y.cuda()
 
-        # Obtain scores from forward pass
-        logits = model.forward(x)
+        with torch.no_grad():
+          # Obtain scores from forward pass
+          logits = model.forward(x)
 
-        # Compute the loss
-        loss = data_loss(logits, y) + model_loss(model)
-        te_loss += [loss]
+          # Compute the loss
+          loss = data_loss(logits, y) + model_loss(model)
+          te_loss += [loss.numpy()]
 
-        # Predict on model
-        pred = torch.argmax(logits, dim=1)
-        acc = torch.mean(torch.eq(pred, y).float()) * 100.0
-        te_acc += [acc]
+          # Predict on model
+          pred = torch.argmax(logits, dim=1)
+          acc = torch.mean(torch.eq(pred, y).float()) * 100.0
+          te_acc += [acc.numpy()]
 
     # Report Test loss and accuracy
-    print("Test Loss = {}".format(np.mean(te_loss)))
-    print("Test Accuracy = {}%".format(np.mean(te_acc)))
+    te_loss = np.mean(te_loss)
+    te_acc = np.mean(te_acc)
+    print("Test Loss = {}".format(te_loss))
+    print("Test Accuracy = {}%".format(te_acc))
 
 
 def main(config):
