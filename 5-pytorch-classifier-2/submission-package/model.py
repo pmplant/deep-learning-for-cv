@@ -74,7 +74,7 @@ class MyNetwork(nn.Module):
 
         # If mean, std is provided, update values accordingly
         if mean is not None and std is not None:
-            # 
+            #
             # ALTHOUGH THIS IS NOT PART OF YOUR IMPLEMENTATION, SEE BELOW.
             #
             # Note here that we use [:] so that actually assign the values, not
@@ -87,14 +87,18 @@ class MyNetwork(nn.Module):
         # connect them with ReLU activation functions (see torch.nn.ReLU). We
         # will procedurally generate them as class attributes according to the
         # configurations. `setattr` Python builtin will be helpful here.
+        self.input = nn.Linear(input_shp, config.num_unit)
 
-        TODO
+        # dynamically create hidden layers
+        for i in range(config.num_hidden):
+            m = nn.Linear(config.num_unit, config.num_unit)
+            setattr(self, "hidden" + str(i), m)
 
         self.output = nn.Linear(config.num_unit, config.num_class)
 
     def forward(self, x):
-        """Forward pass for the model 
-        
+        """Forward pass for the model
+
         Parameters
         ----------
 
@@ -104,7 +108,7 @@ class MyNetwork(nn.Module):
             elements in the batch, and C is the number of dimension of our
             feature. H, W is when we use raw images. In the current assignment,
             it wil l be of shape BC.
-        
+
         Returns
         -------
 
@@ -124,7 +128,12 @@ class MyNetwork(nn.Module):
         # the `getattr` Python builtin, which is the opposite of setattr.
         # above.
 
-        TODO
+        x = nn.ReLU(self.input(x))
+
+        # apply hidden layers
+        for i in range(self.config.num_hidden):
+            m = getattr(self, "hidden" + str(i))
+            x = m(x)
 
         return self.output(x)
 
