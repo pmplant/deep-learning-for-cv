@@ -59,7 +59,7 @@ class MyConv2d(nn.Module):
             requires_grad=True)
 
     def forward(self, x):
-        """Forward pass for the 3x3 cross correlation. 
+        """Forward pass for the 3x3 cross correlation.
 
         Note that we apply cross correlation, not the convolution, inorder to
         adhere to the pytorch implementations. If you really want to do
@@ -68,7 +68,7 @@ class MyConv2d(nn.Module):
         Implemented purely with PyTorch operations so that we don't have to
         implement the backward pass. Note that we implement the 3x3 case only,
         and do not need to consider cases other than the 3x3 conv with stride 1
-        and no padding. 
+        and no padding.
 
         You are **NOT ALLOWED** to use the convolution operations implemented
         in PyTorch. Instead, use `torch.permute`, `torch.reshape`, and
@@ -139,22 +139,41 @@ class MyNetwork(nn.Module):
         # ``feature map'' shape as `cur_h` and `cur_w`
         cur_h, cur_w = input_shp[-2:]
 
-        TODO
 
+        # Channels in the input layer
+        chan_in = input_shp[0]
+
+        # Levels
+        for _i in range(config.num_conv_outer):
+            # Blocks
+            for _j in range(config.num_conv_inner):
+                chan_out = config.nchannel_base * 2**_i
+                setattr(self, "conv_conv2d_{}_{}".format(_i, _j),
+                        nn.Conv2d(chan_in, chan_out, config.ksize))
+                setattr(self, "conv_relu_{}_{}".format(_i, _j),
+                        nn.ReLU())
+                chan_in = chan_out
+
+            setattr(self, "conv_pool_{}".format(_i),
+                    nn.MaxPool2d(2))
+
+        print(cur_h, cur_w, cur_h * cur_w)
         # Fully connected layers and output layers
-        indim = outdim * cur_h * cur_w
+        outdim = config.num_unit  # outdim was unset?
+        indim = outdim
+        # indim = outdim * cur_h * cur_w  # this seems wrong
         for _i in range(config.num_hidden):
-            outdim = config.num_unit
+            # outdim = config.num_unit  # outdim is invariant ?
             setattr(self, "fc_linear_{}".format(
                 _i), self.Linear(indim, outdim))
             setattr(self, "fc_relu_{}".format(_i), self.Activation())
-            indim = outdim
+            # indim = outdim  # indim is invariant ?
         self.output = nn.Linear(indim, config.num_class)
 
         print(self)
 
     def forward(self, x):
-        """Forward pass for the model 
+        """Forward pass for the model
 
         Parameters
         ----------
