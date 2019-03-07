@@ -139,7 +139,6 @@ class MyNetwork(nn.Module):
         # ``feature map'' shape as `cur_h` and `cur_w`
         cur_h, cur_w = input_shp[-2:]
 
-
         # Channels in the input layer
         chan_in = input_shp[0]
 
@@ -201,7 +200,16 @@ class MyNetwork(nn.Module):
         x = (x - 128.) / 128.
 
         # TODO (5 points): Apply the convolutional layers
-        TODO
+
+        # Levels
+        for _i in range(self.config.num_conv_outer):
+            # Blocks
+            for _j in range(self.config.num_conv_inner):
+                m = getattr(self, "conv_conv2d_{}_{}".format(_i, _j))
+                r = getattr(self, "conv_relu_{}_{}".format(_i, _j))
+                x = r(m(x))  # convolution and activation
+            p = getattr(self, "conv_pool_{}".format(_i))
+            x = p(x)  # pool
 
         # Flatten
         x = x.view(x.size(0), -1)
