@@ -156,7 +156,6 @@ class MyNetwork(nn.Module):
             setattr(self, "conv_pool_{}".format(_i),
                     nn.MaxPool2d(2))
 
-        print(cur_h, cur_w, cur_h * cur_w)
         # Fully connected layers and output layers
         outdim = config.num_unit  # outdim was unset?
         indim = outdim
