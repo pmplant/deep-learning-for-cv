@@ -78,13 +78,22 @@ class MyConv2d(nn.Module):
 
         """
 
-        assert(len(x.shape) == 4)
-
         # TODO (50 points): Implement according to the above comment.
 
-        TODO
+        assert(len(x.shape) == 4)
+        N, C_in, H, W = x.shape[:]
+        C_out, C_in_verify, kh, kw = self.weight.shape[:]
+        H_out = H - kh + 1  # kernel size, stride, and padding const
+        W_out = W - kw + 1
 
+        assert(H == W)
+        assert(C_in == C_in_verify)
 
+        x_out = torch.ones((N, C_out, H_out, W_out),
+                           dtype=torch.float32)
+        x_out[:] = self.bias.repeat(H_out, W_out)
+        for n, c, i, j in np.ndindex(N, C_out, H_out, W_out):
+            x_out[n, c, i, j] += torch.sum(self.weight[c, :] * x[n, :, i:i+3, j:j+3])
         return x_out
 
 
@@ -142,13 +151,14 @@ class MyNetwork(nn.Module):
         # Channels in the input layer
         chan_in = input_shp[0]
 
-        # Levels
+        # Levels        # print(self.weight)
+
         for _i in range(config.num_conv_outer):
             # Blocks
             for _j in range(config.num_conv_inner):
                 chan_out = config.nchannel_base * 2**_i
                 setattr(self, "conv_conv2d_{}_{}".format(_i, _j),
-                        nn.Conv2d(chan_in, chan_out, config.ksize))
+                        self.Conv2d(chan_in, chan_out, config.ksize))
                 setattr(self, "conv_relu_{}_{}".format(_i, _j),
                         nn.ReLU())
                 chan_in = chan_out
