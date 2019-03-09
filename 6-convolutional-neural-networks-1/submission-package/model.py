@@ -54,9 +54,17 @@ class MyConv2d(nn.Module):
             torch.randn((outchannel, inchannel, ksize, ksize)),
             requires_grad=True)
 
+        # Layer dimensions
+        self.inchannel = inchannel
+        self.outchannel = outchannel
+        self.ksize = ksize
+        self.stride = stride
+        self.padding = padding
+
         self.bias = nn.Parameter(
             torch.randn((outchannel,)),
             requires_grad=True)
+
 
     def forward(self, x):
         """Forward pass for the 3x3 cross correlation.
@@ -82,18 +90,30 @@ class MyConv2d(nn.Module):
 
         assert(len(x.shape) == 4)
         N, C_in, H, W = x.shape[:]
-        C_out, C_in_verify, kh, kw = self.weight.shape[:]
-        H_out = H - kh + 1  # kernel size, stride, and padding const
-        W_out = W - kw + 1
+        H_out = H - self.ksize + 1  # kernel size, stride, and padding const
+        W_out = W - self.ksize + 1
 
-        assert(H == W)
-        assert(C_in == C_in_verify)
+        # assert(H == W)
+        # assert(C_in == self.inchannel)
 
-        x_out = torch.ones((N, C_out, H_out, W_out),
-                           dtype=torch.float32)
-        x_out[:] = self.bias.repeat(H_out, W_out)
-        for n, c, i, j in np.ndindex(N, C_out, H_out, W_out):
-            x_out[n, c, i, j] += torch.sum(self.weight[c, :] * x[n, :, i:i+3, j:j+3])
+        # reorder matricies for easier matrix multiplication
+        w = self.weight.permute(2, 3, 1, 0)
+        x = x.permute(0, 2, 3, 1)
+
+        # initilize output matrix
+        x_out = torch.zeros((N, H_out, W_out, self.outchannel), dtype=torch.float32) + self.bias
+        # print(x.shape, x_out.shape, w.shape)
+
+        # compute cross correlation
+        for i, j in np.ndindex(2, 2):
+            x_out += torch.matmul(x[:, i:H_out+i, j:W_out+j], w[i, j])
+
+        # correct output shape
+        x_out = x_out.permute(0, 3, 1, 2)
+        # print(x_out.shape)
+
+        # assert(x_out.shape == torch.Size([N, self.outchannel, H_out, W_out]))
+
         return x_out
 
 
