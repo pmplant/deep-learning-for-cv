@@ -54,13 +54,6 @@ class MyConv2d(nn.Module):
             torch.randn((outchannel, inchannel, ksize, ksize)),
             requires_grad=True)
 
-        # Layer dimensions
-        self.inchannel = inchannel
-        self.outchannel = outchannel
-        self.ksize = ksize
-        self.stride = stride
-        self.padding = padding
-
         self.bias = nn.Parameter(
             torch.randn((outchannel,)),
             requires_grad=True)
@@ -88,31 +81,32 @@ class MyConv2d(nn.Module):
 
         # TODO (50 points): Implement according to the above comment.
 
-        assert(len(x.shape) == 4)
+        # assert(len(x.shape) == 4)
         N, C_in, H, W = x.shape[:]
-        H_out = H - self.ksize + 1  # kernel size, stride, and padding const
-        W_out = W - self.ksize + 1
+        C_out, C_in_sanity, k, _ = self.weight.shape[:]
+        H_out = H - k + 1  # kernel size, stride, and padding const
+        W_out = W - k + 1
 
         # assert(H == W)
-        # assert(C_in == self.inchannel)
+        # assert(C_in == C_in_sanity)
+        # assert(k == 3)
 
         # reorder matricies for easier matrix multiplication
         w = self.weight.permute(2, 3, 1, 0)
         x = x.permute(0, 2, 3, 1)
 
         # initilize output matrix
-        x_out = torch.zeros((N, H_out, W_out, self.outchannel), dtype=torch.float32) + self.bias
-        # print(x.shape, x_out.shape, w.shape)
+        x_out = torch.zeros((N, H_out, W_out, C_out), dtype=torch.float32)
 
         # compute cross correlation
-        for i, j in np.ndindex(2, 2):
+        for i, j in np.ndindex(k, k):
             x_out += torch.matmul(x[:, i:H_out+i, j:W_out+j], w[i, j])
+        x_out += self.bias
 
         # correct output shape
         x_out = x_out.permute(0, 3, 1, 2)
-        # print(x_out.shape)
 
-        # assert(x_out.shape == torch.Size([N, self.outchannel, H_out, W_out]))
+        # assert(x_out.shape == torch.Size([N, C_out, H_out, W_out]))
 
         return x_out
 
