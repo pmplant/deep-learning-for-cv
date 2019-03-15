@@ -53,7 +53,7 @@ class ConvBlock(nn.Module):
 
         # TODO (10 points): Compute padding according to `ksize`. Make sure
         # that this will not cause image width and height to change.
-        padding = ((outdim - 1) * stride - indim + ksize) / 2
+        padding = (ksize - 1) // 2
 
         # tests
         print(indim, outdim, ksize, stride, padding)
