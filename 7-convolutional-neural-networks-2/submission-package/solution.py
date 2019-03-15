@@ -103,7 +103,8 @@ def train(config):
         config=config,
         input_shp=train_data.sample_shp)
     # Move model to gpu if cuda is available
-    if torch.cuda.is_available():
+    if False:
+    # if torch.cuda.is_available():
         model = model.cuda()
     # Make sure that the model is set for training
     model.train()
@@ -176,7 +177,8 @@ def train(config):
             x, y = data
 
             # Send data to GPU if we have one
-            if torch.cuda.is_available():
+            if False:
+            # if torch.cuda.is_available():
                 x = x.cuda()
                 y = y.cuda()
 
@@ -225,7 +227,8 @@ def train(config):
                     x, y = data
 
                     # Send data to GPU if we have one
-                    if torch.cuda.is_available():
+                    if False:
+                    # if torch.cuda.is_available():
                         x = x.cuda()
                         y = y.cuda()
 
@@ -285,7 +288,8 @@ def test(config):
         config=config,
         input_shp=test_data.sample_shp)
     # Move to GPU if you have one.
-    if torch.cuda.is_available():
+    if False:
+    # if torch.cuda.is_available():
         model = model.cuda()
 
     # Create loss objects
@@ -307,7 +311,8 @@ def test(config):
         x, y = data
 
         # Send data to GPU if we have one
-        if torch.cuda.is_available():
+        if False:
+        # if torch.cuda.is_available():
             x = x.cuda()
             y = y.cuda()
 

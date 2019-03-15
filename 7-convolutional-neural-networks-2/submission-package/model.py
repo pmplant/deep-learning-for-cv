@@ -25,7 +25,6 @@
 import numpy as np
 import torch
 from torch import nn
-import copy
 
 
 class ConvBlock(nn.Module):
@@ -54,11 +53,12 @@ class ConvBlock(nn.Module):
 
         # TODO (10 points): Compute padding according to `ksize`. Make sure
         # that this will not cause image width and height to change.
-        padding = (stride*(outdim - 1) - w + f)
+        padding = ((outdim - 1) * stride - indim + ksize) - 1
 
         # tests
+        print(indim, outdim, ksize, stride, padding)
         assert padding == padding//1, "non-integer padding"
-        assert outdim == (indim - ksize + 2*padding) / stride + 1, "output size does not match"
+        # assert outdim == (indim - ksize + 2 * padding) / stride + 1, "output size does not match"
 
         # TODO (20 points): Create ResNet Block.
         #
@@ -70,11 +70,10 @@ class ConvBlock(nn.Module):
         #
         # Also note that we are creating these layers with support for
         # different `ksize`, `stride`, `padding`, unlike previous assignment.
-        self.layers = nn.Sequential(
-            self._conv(indim, indim, 1, 1, 0),
-            self._conv(indim, outdim, ksize, stride, padding),
-            self._conv(outdim, outdim, 1, 1, 0),
-            )
+        self.layers = nn.Sequential()
+        self.layers.add_module("conv_1", self._conv(outdim, outdim, 1, 1, 0))
+        self.layers.add_module("conv_2", self._conv(outdim, outdim, ksize, stride, padding))
+        self.layers.add_module("conv_3", self._conv(outdim, outdim, 1, 1, 0))
 
     def _conv(self, indim, outdim, ksize, stride, padding):
         """Function to make conv layers easier to create.
@@ -84,9 +83,9 @@ class ConvBlock(nn.Module):
         """
 
         # TODO (5 points): Implement this function
-        layer = nn.Sequential(nn.BatchNorm2d(1),  # idk what to use here
-                              nn.Conv2d(indim, outdim, ksize, stride, padding),
-                              self.activ)
+        layer = nn.Sequential(nn.BatchNorm2d(indim),
+                              nn.Conv2d(indim, outdim, (ksize, ksize), (stride, stride), (padding, padding)),
+                              self.activ())
 
         return layer
 
@@ -103,7 +102,7 @@ class ConvBlock(nn.Module):
         assert(len(x.shape) == 4)
 
         # TODO (5 points): Implement according to the above comment.
-        x1 = copy.deepcopy(x)
+        x1 = x.clone().detach()
         x2 = self.layers(x)
         x3 = x1 + x2
 
