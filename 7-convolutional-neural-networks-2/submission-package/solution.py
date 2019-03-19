@@ -154,6 +154,11 @@ def train(config):
             best_va_acc = load_res["best_va_acc"]
             # Resume model
             model.load_state_dict(load_res["model"])
+
+            # Fix gpu -> cpu bug
+            if not torch.cuda.is_available():
+                model = model.cpu()
+
             # Resume optimizer
             optimizer.load_state_dict(load_res["optimizer"])
             # Note that we do not resume the epoch, since we will never be able
@@ -295,6 +300,11 @@ def test(config):
     # Load our best model and set model for testing
     load_res = torch.load(os.path.join(config.save_dir, "best_model.pth"))
     model.load_state_dict(load_res["model"])
+
+    # Fix gpu -> cpu bug
+    if not torch.cuda.is_available():
+        model = model.cpu()
+
     model.eval()
 
     # Implement The Test loop

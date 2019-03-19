@@ -56,7 +56,6 @@ class ConvBlock(nn.Module):
         padding = (ksize - 1) // 2
 
         # tests
-        print(indim, outdim, ksize, stride, padding)
         assert padding == padding//1, "non-integer padding"
         # assert outdim == (indim - ksize + 2 * padding) / stride + 1, "output size does not match"
 
