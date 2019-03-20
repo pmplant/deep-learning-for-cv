@@ -147,17 +147,17 @@ def train(config):
             # to code the saving part first and then code this part.
             print("Checkpoint found! Resuming")
             # Read checkpoint file.
-            load_res = torch.load(checkpoint_file)
+
+            # Fix gpu -> cpu bug
+            compute_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            load_res = torch.load(checkpoint_file, map_location=compute_device)
+
             # Resume iterations
             iter_idx = load_res["iter_idx"]
             # Resume best va result
             best_va_acc = load_res["best_va_acc"]
             # Resume model
             model.load_state_dict(load_res["model"])
-
-            # Fix gpu -> cpu bug
-            if not torch.cuda.is_available():
-                model = model.cpu()
 
             # Resume optimizer
             optimizer.load_state_dict(load_res["optimizer"])
@@ -297,13 +297,14 @@ def test(config):
     data_loss = data_criterion(config)
     model_loss = model_criterion(config)
 
-    # Load our best model and set model for testing
-    load_res = torch.load(os.path.join(config.save_dir, "best_model.pth"))
-    model.load_state_dict(load_res["model"])
-
     # Fix gpu -> cpu bug
-    if not torch.cuda.is_available():
-        model = model.cpu()
+    compute_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+    # Load our best model and set model for testing
+    load_res = torch.load(os.path.join(config.save_dir, "best_model.pth"),
+                          map_location=compute_device)
+
+    model.load_state_dict(load_res["model"])
 
     model.eval()
 
