@@ -1,4 +1,3 @@
 # Deep Learning for CV
-
-## Starting Tensorboard
-Start the tensorboard server with "tensorboard --logdir logs" from the submission-package directory, then open "http://localhost:6006" in a browser.
+Assignments for Spring 2019
+https://heat.csc.uvic.ca/coview/course/2018011/CSC486B
